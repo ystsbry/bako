@@ -84,6 +84,36 @@ func ProjectExists(slug string) bool {
 	return err == nil
 }
 
+// ResolveProject finds a project by reference, accepting either its exact
+// slug or its display name (case-insensitive, or after slugifying). It is the
+// entry point used by CLI commands that take a --project flag so callers can
+// pass whichever identifier is handy.
+func ResolveProject(ref string) (model.Project, error) {
+	ref = strings.TrimSpace(ref)
+	if ref == "" {
+		return model.Project{}, fmt.Errorf("project reference is empty")
+	}
+	if ProjectExists(ref) {
+		return LoadProject(ref)
+	}
+	projects, err := ListProjects()
+	if err != nil {
+		return model.Project{}, err
+	}
+	for _, p := range projects {
+		if strings.EqualFold(p.Name, ref) {
+			return p, nil
+		}
+	}
+	s := Slugify(ref)
+	for _, p := range projects {
+		if p.Slug == s {
+			return p, nil
+		}
+	}
+	return model.Project{}, fmt.Errorf("project %q not found (run `bako project list`)", ref)
+}
+
 // CreateProject creates a new project with a slug derived from name. The slug
 // is made unique by appending -2, -3, ... on collision. The created project
 // (with its assigned Slug) is returned.

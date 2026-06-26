@@ -1,0 +1,11 @@
+{
+  "name": "bako",
+  "description": "bako のスキル群を Codex / Claude プラグインとして配布するローカルマーケットプレース。",
+  "plugins": [
+    {
+      "name": "bako",
+      "description": "register-repo を束ねた bako プラグイン。",
+      "source": { "source": "local", "path": "./plugin" }
+    }
+  ]
+}

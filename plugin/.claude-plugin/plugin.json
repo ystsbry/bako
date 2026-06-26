@@ -1,0 +1,6 @@
+{
+  "name": "bako",
+  "version": "0.1.0",
+  "description": "bako プロジェクトに GitHub リポジトリ/Organization の説明（概要）を登録するスキル群。register-repo を提供する。",
+  "author": { "name": "ystsbry" }
+}

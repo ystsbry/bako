@@ -62,6 +62,26 @@ make build
 ./bin/bako version
 ```
 
+### CLI（非対話）
+
+TUI を介さずにリポジトリ/Organization を登録・参照できます（スキルやスクリプトから利用）。
+
+```sh
+bako project list [--json]                 # プロジェクト一覧（slug / name）
+
+# リポジトリ/Organization を登録（同じ owner/name は上書き更新）
+bako repo add --project <slug|name> --owner <owner> --repo <name> [--url <url>] \
+  [--overview <text> | --overview-file <path|-> ]
+bako repo add --project <slug|name> --owner <owner> --org [--overview ...]
+
+# 概要を標準入力から渡す例
+echo "## 概要..." | bako repo add --project apex-rewrite --owner ystsbry --repo bako --overview-file -
+
+bako repo list --project <slug|name> [--json]   # 登録済みリポジトリの確認
+```
+
+`--project` には slug でも表示名でも渡せます（bako 側で解決）。
+
 ### TUI の操作
 
 - **プロジェクト一覧**: `↑/↓` 移動 · `enter` 開く · `n` 新規 · `e` 編集 · `d` 削除 · `q` 終了
@@ -71,10 +91,36 @@ make build
   - 状態 / 種別フィールドは `←/→` で切替
   - PBI 内容やリポジトリ概要はテキストエリアに貼り付け可能
 
+## スキル / プラグイン（Claude Code・Codex）
+
+`plugin/` 配下に、リポジトリ説明を bako に登録するためのスキルを同梱しています。
+
+| スキル | 役割 |
+| ------ | ---- |
+| `register-repo` | 対象リポジトリを調査して日本語の概要を生成し、`bako repo add` で bako プロジェクトに登録する |
+
+インストール:
+
+```sh
+make install            # bako CLI を PATH へ（スキルが内部で呼ぶ）
+make install-plugin     # Claude Code: ~/.claude/skills/bako に登録（/bako:register-repo）
+make install-codex-skills   # Codex CLI: ~/.agents/skills に登録（$register-repo）
+```
+
+使い方:
+
+```
+/bako:register-repo --project <slug|name> --repo <owner/name> [--path <REPO_DIR>] [--org]   # Claude Code
+$register-repo --project <slug|name> --repo <owner/name> [--path <REPO_DIR>] [--org]         # Codex CLI
+```
+
+`--path` にローカルのリポジトリを渡すと、その内容（README・構成・依存）を調査して概要を作成します。
+登録先プロジェクトは事前に TUI で作成しておく必要があります。
+
 ## 今後の予定
 
 - CLI 経由での PBI ステータス取得・内容/タイトル出力
-- それらを読むためのスキル
+- PBI を読むためのスキル
 
 ## 開発
 

@@ -39,6 +39,8 @@ func newRootCmd() *cobra.Command {
 	}
 	cmd.AddCommand(newVersionCmd())
 	cmd.AddCommand(newHomeCmd())
+	cmd.AddCommand(newProjectCmd())
+	cmd.AddCommand(newRepoCmd())
 	return cmd
 }
 
